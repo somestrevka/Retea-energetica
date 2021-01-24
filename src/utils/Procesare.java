@@ -11,13 +11,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 
-/** The type Procesare. */
+/**
+ * The type Procesare.
+ */
 public class Procesare {
 
   /**
    * All turns.
    *
-   * @param inputData the input data
+   * @param inputData  the input data
    * @param outputData the output data
    */
   public void allTurns(final InputData inputData, final OutputData outputData) {
@@ -28,18 +30,17 @@ public class Procesare {
 
     int check = 1;
     moveStart(data); // mutarea de start, din initialBudget in budget
-    // distribuitorii isi cauta producatori
-    for (Distributor distributor: data.getDistributors()
-         ) {  // fiecare distribuitor isi gaseste producatorul/ producatorii
-      findProducers(distributor, data.getProducers());
-    }
-
+    // toti distribuitorii isi vor seta flagul producerChanged in true
+    changeFlag(data.getDistributors());
     for (int i = 0; i <= inputData.getNumberOfTurns(); i++) {
       if (i > 0) { // verificam daca avem update-uri
         checkForUpdates(data, inputData.getMonthlyUpdates(), i);
         addstats(data.getProducers(), i);
       }
-
+      // distribuitorii isi cauta producatori
+      lookingForProducer(data);
+      //System.out.println(data.getProducers()+"\n");
+      //System.out.println(data.getDistributors());
       cleanContracts(data.getConsumers(), data.getDistributors());
 
       receiveIncomeConsumers(data.getConsumers()); // platim consumatorii
@@ -60,14 +61,45 @@ public class Procesare {
     // transferam datele pentru afisare
   }
 
-  // aici aduagam pe fiecare luna la fiecare producator lista lui
+  public void changeFlag(ArrayList<Distributor> distributors) {
+    for (Distributor distributor: distributors
+         ) {
+      distributor.setProducerChanged(true);
+    }
+  }
+
+  /**
+   * Looking for producer.
+   *
+   * @param data the data
+   */
+  public void lookingForProducer(final Data data) {
+    for (Distributor distributor: data.getDistributors()
+    ) {  // fiecare distribuitor isi gaseste producatorul/ producatorii
+      if (distributor.isProducerChanged()) {
+        if (distributor.getProducers() != null) {
+          distributor.setEnergyStillNeeded(distributor.getEnergyNeededKW());
+          distributor.removeProducers();
+        }
+        findProducers(distributor, data.getProducers());
+      }
+    }
+  }
+
+  /**
+   * Addstats.
+   *
+   * @param producers the producers
+   * @param month     the month
+   */
+// aici aduagam pe fiecare luna la fiecare producator lista lui
   // cu id-urile distribuitorilor care iau energie de la el
   public void addstats(ArrayList<Producer> producers, int month) {
     for (Producer producer: producers
          ) {
       ArrayList<Integer> ids = new ArrayList<>();
-      if (producer.getCurrentDistributors() != null) {
-        addIds(ids, producer.getCurrentDistributors());
+      if (producer.getObservers() != null) {
+        addIds(ids, producer.getObservers());
       }
       MonthlyStats monthlyStats = new MonthlyStats();
       monthlyStats.setMonth(month);
@@ -79,6 +111,12 @@ public class Procesare {
     }
   }
 
+  /**
+   * Add ids.
+   *
+   * @param ids          the ids
+   * @param distributors the distributors
+   */
   public void addIds(ArrayList<Integer> ids, ArrayList<Distributor> distributors) {
     for (Distributor distributor: distributors
          ) {
@@ -86,9 +124,15 @@ public class Procesare {
     }
   }
 
+  /**
+   * Find producers.
+   *
+   * @param distributor the distributor
+   * @param producers   the producers
+   */
   public void findProducers(Distributor distributor,
                             ArrayList<Producer> producers) {
-      if(distributor.getProducerStrategy().label.equals("GREEN")) {
+      if (distributor.getProducerStrategy().label.equals("GREEN")) {
         findProducerByEnergy(distributor, producers);
       }
       if (distributor.getProducerStrategy().label.equals("PRICE")) {
@@ -100,19 +144,33 @@ public class Procesare {
 
   }
 
-  // fiecare distribuitor isi gaseste producatorul
-  public void findProducerByPrice(Distributor distributor
-          , ArrayList<Producer> producers) {
+  /**
+   * Find producer by price.
+   *
+   * @param distributor the distributor
+   * @param producers   the producers
+   */
+// fiecare distribuitor isi gaseste producatorul
+  public void findProducerByPrice(Distributor distributor,
+                                  ArrayList<Producer> producers) {
     producers.sort(Comparator.comparing(Producer::getPriceKW)
             .thenComparing(Producer::getEnergyPerDistributor, Collections.reverseOrder()));
     for (Producer producer: producers
          ) {
       distributor.addProducers(producer);
-      producer.addsDistributor(distributor);
-      if (distributor.stillNeed() <= 0) break;
+      producer.addsObserver(distributor);
+      if (distributor.stillNeed() <= 0) {
+        break;
+      }
     }
   }
 
+  /**
+   * Find producer by quantity.
+   *
+   * @param distributor the distributor
+   * @param producers   the producers
+   */
   public void findProducerByQuantity(Distributor distributor,
                                      ArrayList<Producer> producers) {
     producers.sort(Comparator.comparing(Producer::getEnergyPerDistributor,
@@ -120,11 +178,19 @@ public class Procesare {
     for (Producer producer: producers
          ) {
       distributor.addProducers(producer);
-      producer.addsDistributor(distributor);
-      if (distributor.stillNeed() <= 0) break;
+      producer.addsObserver(distributor);
+      if (distributor.stillNeed() <= 0) {
+        break;
+      }
     }
   }
 
+  /**
+   * Find producer by energy.
+   *
+   * @param distributor the distributor
+   * @param producers   the producers
+   */
   public void findProducerByEnergy(Distributor distributor,
                                    ArrayList<Producer> producers) {
 
@@ -133,9 +199,13 @@ public class Procesare {
     for (Producer producer: producers
     ) {
       distributor.addProducers(producer);
-      producer.addsDistributor(distributor);
-      if (distributor.stillNeed() <= 0) break;
+      producer.addsObserver(distributor);
+      System.out.println(distributor.stillNeed());
+      if (distributor.stillNeed() <= 0) {
+        break;
+      }
     }
+    System.out.println("end\n");
   }
 
   /**
@@ -169,7 +239,7 @@ public class Procesare {
   /**
    * Pay time cosumers.
    *
-   * @param consumers the consumers
+   * @param consumers    the consumers
    * @param distributors the distributors
    */
   public void payTimeCosumers(final ArrayList<Consumer> consumers,
@@ -197,7 +267,7 @@ public class Procesare {
   /**
    * Clean contracts.
    *
-   * @param consumers the consumers
+   * @param consumers    the consumers
    * @param distributors the distributors
    */
   public void cleanContracts(final ArrayList<Consumer> consumers,
@@ -212,9 +282,9 @@ public class Procesare {
   /**
    * Check for updates.
    *
-   * @param data the data
+   * @param data    the data
    * @param updates the updates
-   * @param month the month
+   * @param month   the month
    */
   public void checkForUpdates(final Data data, final ArrayList<MonthlyUpdates> updates,
                               int month) {
@@ -242,10 +312,12 @@ public class Procesare {
         for (int i = 0; i < producers.size(); i++) {
           id = producers.get(i).getId();
           int energyPerDistributor = producers.get(i).getEnergyPerDistributor();
-          data.getProducers().get(id).notifyChange(); // anuntam mai intai distribuitorii ca
+          // anuntam mai intai distribuitorii ca
           // producator va suferi modificari
+          data.getProducers().get(id).notifyChange();
           // modificam producatorul
           data.getProducers().get(id).setEnergyPerDistributor(energyPerDistributor);
+
         }
       }
     }
@@ -270,6 +342,11 @@ public class Procesare {
     copyProducersForLater(data);
   }
 
+  /**
+   * Copy producers for later.
+   *
+   * @param data the data
+   */
   public void copyProducersForLater(final Data data) {
     ArrayList<Producer> auxProducers = new ArrayList<>();
     for (Producer producer: data.getProducers()

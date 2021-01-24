@@ -4,45 +4,103 @@ import entities.EnergyType;
 
 import java.util.ArrayList;
 
-public class Producer extends MotherProducer implements Comparable<Producer>{
+/**
+ * The type Producer.
+ */
+public class Producer extends MotherProducer implements Comparable<Producer> {
     private int numberOfDistributors;
-    private ArrayList<Distributor> currentDistributors;
+    private ArrayList<Distributor> observers;
 
-    public ArrayList<Distributor> getCurrentDistributors() {
-        return currentDistributors;
+    /**
+     * Gets current distributors.
+     *
+     * @return the current distributors
+     */
+    public ArrayList<Distributor> getObservers() {
+        return observers;
     }
 
-    public void setCurrentDistributors(ArrayList<Distributor> currentDistributors) {
-        this.currentDistributors = currentDistributors;
+    /**
+     * Add observer.
+     *
+     * @param observer the observer
+     */
+    public void addObserver(Distributor observer) {
+        this.observers.add(observer);
     }
+
+     void removeObserver(int idObserver) {
+        this.observers.remove(idObserver);
+        this.numberOfDistributors--;
+    }
+
+    /**
+     * Sets current distributors.
+     *
+     * @param observers the current distributors
+     */
+    public void setObservers(ArrayList<Distributor> observers) {
+        this.observers = observers;
+    }
+
+    /**
+     * used for debugging
+     * @return
+     */
 
     @Override
     public String toString() {
         return "Producer{" +
-                "id=" + this.getId() +
-                ", priceKW=" + this.getPriceKW() +
-                ", energyPerDistributor=" + this.getEnergyPerDistributor() +
-                ", numberOfDistributors=" + numberOfDistributors +
-                '}';
+                "id=" + this.getId()
+                + ", priceKW=" + this.getPriceKW()
+                + ", energyPerDistributor=" + this.getEnergyPerDistributor()
+                + ", numberOfDistributors=" + numberOfDistributors
+                + '}';
     }
 
-    public void notifyChange() { // producatorul isi va scoate din lista toti distribuitorii
-        for (Distributor distributor: this.currentDistributors
+    /**
+     * Notify change array list.
+     *
+     * @return the array list
+     */
+    public void notifyChange() { // producatorul isi va scoate
+        // din lista toti distribuitorii
+        for (Distributor distributor: this.observers
              ) {
-            distributor.removeProducer(this.getId());
+            distributor.notifyChange();
         }
     }
 
+    /**
+     * Gets number of distributors.
+     *
+     * @return the number of distributors
+     */
     public int getNumberOfDistributors() {
         return numberOfDistributors;
     }
 
+    /**
+     * Sets number of distributors.
+     *
+     * @param numberOfDistributors the number of distributors
+     */
     public void setNumberOfDistributors(int numberOfDistributors) {
         this.numberOfDistributors = numberOfDistributors;
     }
 
 
-    public Producer(int id, EnergyType energyType, int maxDistributors, float priceKW, int energyPerDistributor) {
+    /**
+     * Instantiates a new Producer.
+     *
+     * @param id                   the id
+     * @param energyType           the energy type
+     * @param maxDistributors      the max distributors
+     * @param priceKW              the price kw
+     * @param energyPerDistributor the energy per distributor
+     */
+    public Producer(int id, EnergyType energyType, int maxDistributors,
+                    float priceKW, int energyPerDistributor) {
         this.setId(id);
         this.setEnergyType(energyType);
         this.setMaxDistributors(maxDistributors);
@@ -50,11 +108,22 @@ public class Producer extends MotherProducer implements Comparable<Producer>{
         this.setEnergyPerDistributor(energyPerDistributor);
     }
 
+    /**
+     * Instantiates a new Producer.
+     *
+     * @param id                   the id
+     * @param energyPerDistributor the energy per distributor
+     */
     public Producer(final int id, final int energyPerDistributor) {
         this.setId(id);
         this.setEnergyPerDistributor(energyPerDistributor);
     }
 
+    /**
+     * Has space boolean.
+     *
+     * @return the boolean
+     */
     public boolean hasSpace() {
         if (this.getMaxDistributors() == this.getNumberOfDistributors()) {
             return false;
@@ -62,6 +131,9 @@ public class Producer extends MotherProducer implements Comparable<Producer>{
         return true;
     }
 
+    /**
+     * Instantiates a new Producer.
+     */
     public Producer() {
 
     }
@@ -74,11 +146,16 @@ public class Producer extends MotherProducer implements Comparable<Producer>{
         return 0;
     }
 
-    public void addsDistributor(Distributor distributor) {
-        if (this.currentDistributors == null) {
-            this.currentDistributors = new ArrayList<>();
+    /**
+     * Adds distributor.
+     *
+     * @param distributor the distributor
+     */
+    public void addsObserver(Distributor distributor) {
+        if (this.observers == null) {
+            this.observers = new ArrayList<>();
         }
-        this.currentDistributors.add(distributor);
+        this.observers.add(distributor);
         this.numberOfDistributors += 1;
     }
 

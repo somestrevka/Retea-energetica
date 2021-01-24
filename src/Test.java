@@ -13,6 +13,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
+/**
+ * The type Config.
+ */
 class Config {
     private String homework;
     private String description;
@@ -23,85 +26,181 @@ class Config {
     private Integer gitScore;
     private List<TestType> testTypes;
 
+    /**
+     * Gets homework.
+     *
+     * @return the homework
+     */
     public String getHomework() {
         return homework;
     }
 
+    /**
+     * Sets homework.
+     *
+     * @param homework the homework
+     */
     public void setHomework(final String homework) {
         this.homework = homework;
     }
 
+    /**
+     * Gets description.
+     *
+     * @return the description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Sets description.
+     *
+     * @param description the description
+     */
     public void setDescription(final String description) {
         this.description = description;
     }
 
+    /**
+     * Gets checkstyle score.
+     *
+     * @return the checkstyle score
+     */
     public Integer getCheckstyleScore() {
         return checkstyleScore;
     }
 
+    /**
+     * Sets checkstyle score.
+     *
+     * @param checkstyleScore the checkstyle score
+     */
     public void setCheckstyleScore(final Integer checkstyleScore) {
         this.checkstyleScore = checkstyleScore;
     }
 
+    /**
+     * Gets homework design score.
+     *
+     * @return the homework design score
+     */
     public Integer getHomeworkDesignScore() {
         return homeworkDesignScore;
     }
 
+    /**
+     * Sets homework design score.
+     *
+     * @param homeworkDesignScore the homework design score
+     */
     public void setHomeworkDesignScore(final Integer homeworkDesignScore) {
         this.homeworkDesignScore = homeworkDesignScore;
     }
 
+    /**
+     * Gets readme score.
+     *
+     * @return the readme score
+     */
     public Integer getReadmeScore() {
         return readmeScore;
     }
 
+    /**
+     * Sets readme score.
+     *
+     * @param readmeScore the readme score
+     */
     public void setReadmeScore(final Integer readmeScore) {
         this.readmeScore = readmeScore;
     }
 
+    /**
+     * Gets test types.
+     *
+     * @return the test types
+     */
     public List<TestType> getTestTypes() {
         return testTypes;
     }
 
+    /**
+     * Sets test types.
+     *
+     * @param testTypes the test types
+     */
     public void setTestTypes(final List<TestType> testTypes) {
         this.testTypes = testTypes;
     }
 
+    /**
+     * Gets git score.
+     *
+     * @return the git score
+     */
     public Integer getGitScore() {
         return gitScore;
     }
 
+    /**
+     * Sets git score.
+     *
+     * @param gitScore the git score
+     */
     public void setGitScore(Integer gitScore) {
         this.gitScore = gitScore;
     }
 }
 
+/**
+ * The type Test type.
+ */
 class TestType {
 
     private Integer score;
     private String type;
 
+    /**
+     * Gets score.
+     *
+     * @return the score
+     */
     public Integer getScore() {
         return score;
     }
 
+    /**
+     * Sets score.
+     *
+     * @param score the score
+     */
     public void setScore(final Integer score) {
         this.score = score;
     }
 
+    /**
+     * Gets type.
+     *
+     * @return the type
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * Sets type.
+     *
+     * @param type the type
+     */
     public void setType(final String type) {
         this.type = type;
     }
 }
 
+/**
+ * The type Test.
+ */
 public final class Test {
     private static final String IN_FOLDER = "in/";
     private static final String REF_FOLDER = "ref/";
@@ -122,6 +221,7 @@ public final class Test {
 
     /**
      * Method to be called for testing the homework
+     *
      * @param argv String[]
      */
     public static void main(final String[] argv) {

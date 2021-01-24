@@ -18,29 +18,43 @@ import strategies.EnergyChoiceStrategyType;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-/** The type Utils. */
+/**
+ * The type Utils.
+ */
 public class Utils {
-  /**
-   * functie utilizata pentru a transfera datele de intrare in formatul de iesire @param data the
-   * data
-   *
-   * @param outputData the output data
-   */
-  public void transferFinal(final Data data, final OutputData outputData) {
+    /**
+     * functie utilizata pentru a transfera datele de intrare in formatul de iesire @param data the
+     * data
+     *
+     * @param data       the data
+     * @param outputData the output data
+     */
+    public void transferFinal(final Data data, final OutputData outputData) {
     transferConsumers(data.getConsumers(), outputData.getConsumers());
     transferDistributors(data.getDistributors(), outputData.getDistributors());
     moveMonthlyStats(data);
     transferProducersFinal(data.getProducersForEnd(), outputData.getEnergyProducers());
   }
 
-  public void moveMonthlyStats(final Data data) {
+    /**
+     * Move monthly stats.
+     *
+     * @param data the data
+     */
+    public void moveMonthlyStats(final Data data) {
       for (Producer producer: data.getProducersForEnd()
            ) {
           findById(producer, data.getProducers());
       }
   }
 
-  public void findById(final Producer producer, final ArrayList<Producer> producers){
+    /**
+     * Find by id.
+     *
+     * @param producer  the producer
+     * @param producers the producers
+     */
+    public void findById(final Producer producer, final ArrayList<Producer> producers) {
       for (Producer producerAux: producers
            ) {
           if (producerAux.getId() == producer.getId()) {
@@ -50,7 +64,13 @@ public class Utils {
       }
   }
 
-  public void transferProducersFinal(ArrayList<Producer> producers,
+    /**
+     * Transfer producers final.
+     *
+     * @param producers    the producers
+     * @param outProducers the out producers
+     */
+    public void transferProducersFinal(ArrayList<Producer> producers,
                                      ArrayList<MotherProducer> outProducers) {
       for (Producer producer : producers) {
           MotherProducer aux = new MotherProducer();
@@ -64,13 +84,13 @@ public class Utils {
       }
   }
 
-  /**
-   * Transfer consumers.
-   *
-   * @param list1 the list 1
-   * @param list2 the list 2
-   */
-  public void transferConsumers(final ArrayList<Consumer> list1,
+    /**
+     * Transfer consumers.
+     *
+     * @param list1 the list 1
+     * @param list2 the list 2
+     */
+    public void transferConsumers(final ArrayList<Consumer> list1,
                                 final ArrayList<ConsumerOut> list2) {
 
     for (int i = 0; i < list1.size(); i++) {
@@ -82,13 +102,13 @@ public class Utils {
     }
   }
 
-  /**
-   * Transfer from input.
-   *
-   * @param data the data
-   * @param inputData the input data
-   */
-  public void transferFromInput(final Data data, final InputData inputData) {
+    /**
+     * Transfer from input.
+     *
+     * @param data      the data
+     * @param inputData the input data
+     */
+    public void transferFromInput(final Data data, final InputData inputData) {
       Factory factory = Factory.getInstance();
       ArrayList<Producer> producers = new ArrayList<>();
       ArrayList<Distributor> distributors = new ArrayList<>();
@@ -97,7 +117,8 @@ public class Utils {
           int initialBudget = distributor.getInitialBudget();
           int energyNeededKW = distributor.getEnergyNeededKW();
           EnergyChoiceStrategyType strategyType = distributor.getProducerStrategy();
-          Distributor aux = (Distributor) factory.factory(EntityType.distributor, id, initialBudget);
+          Distributor aux = (Distributor)
+                  factory.factory(EntityType.distributor, id, initialBudget);
           aux.setInitialInfrastructureCost(distributor.getInitialInfrastructureCost());
           aux.setInitialProductionCost(distributor.getInitialProductionCost());
           aux.setContractLength(distributor.getContractLength());
@@ -123,7 +144,13 @@ public class Utils {
       data.setConsumers(consumers);
   }
 
-  public void transferProducers(final ArrayList<Producer> list1,
+    /**
+     * Transfer producers.
+     *
+     * @param list1 the list 1
+     * @param list2 the list 2
+     */
+    public void transferProducers(final ArrayList<Producer> list1,
                                 final ArrayList<Producer> list2) {
       for (Producer producer: list1
       ) {
@@ -145,13 +172,13 @@ public class Utils {
       }
   }
 
-  /**
-   * Transfer distributors.
-   *
-   * @param list1 the list 1
-   * @param list2 the list 2
-   */
-  public void transferDistributors(final ArrayList<Distributor> list1,
+    /**
+     * Transfer distributors.
+     *
+     * @param list1 the list 1
+     * @param list2 the list 2
+     */
+    public void transferDistributors(final ArrayList<Distributor> list1,
                                    final ArrayList<OutDistributor> list2) {
     Distributor auxGet;
     for (int i = 0; i < list1.size(); i++) {
