@@ -5,10 +5,12 @@ import data.*;
 import provider.Contract;
 import provider.Distributor;
 import provider.Producer;
+import strategies.Context;
+import strategies.FindWhenGreen;
+import strategies.FindWhenPrice;
+import strategies.FindWhenQuantity;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 
 /**
@@ -133,80 +135,20 @@ public class Procesare {
   public void findProducers(Distributor distributor,
                             ArrayList<Producer> producers) {
       if (distributor.getProducerStrategy().label.equals("GREEN")) {
-        findProducerByEnergy(distributor, producers);
+        Context context = new Context(new FindWhenGreen());
+        context.executeStrategy(distributor, producers);
       }
       if (distributor.getProducerStrategy().label.equals("PRICE")) {
-        findProducerByPrice(distributor, producers);
+        Context context = new Context(new FindWhenPrice());
+        context.executeStrategy(distributor, producers);
       }
       if (distributor.getProducerStrategy().label.equals("QUANTITY")) {
-        findProducerByQuantity(distributor, producers);
+        Context context = new Context(new FindWhenQuantity());
+        context.executeStrategy(distributor, producers);
       }
 
   }
 
-  /**
-   * Find producer by price.
-   *
-   * @param distributor the distributor
-   * @param producers   the producers
-   */
-// fiecare distribuitor isi gaseste producatorul
-  public void findProducerByPrice(Distributor distributor,
-                                  ArrayList<Producer> producers) {
-    producers.sort(Comparator.comparing(Producer::getPriceKW)
-            .thenComparing(Producer::getEnergyPerDistributor, Collections.reverseOrder()));
-    for (Producer producer: producers
-         ) {
-      distributor.addProducers(producer);
-      producer.addsObserver(distributor);
-      if (distributor.stillNeed() <= 0) {
-        break;
-      }
-    }
-  }
-
-  /**
-   * Find producer by quantity.
-   *
-   * @param distributor the distributor
-   * @param producers   the producers
-   */
-  public void findProducerByQuantity(Distributor distributor,
-                                     ArrayList<Producer> producers) {
-    producers.sort(Comparator.comparing(Producer::getEnergyPerDistributor,
-            Collections.reverseOrder()));
-    for (Producer producer: producers
-         ) {
-      distributor.addProducers(producer);
-      producer.addsObserver(distributor);
-      if (distributor.stillNeed() <= 0) {
-        break;
-      }
-    }
-  }
-
-  /**
-   * Find producer by energy.
-   *
-   * @param distributor the distributor
-   * @param producers   the producers
-   */
-  public void findProducerByEnergy(Distributor distributor,
-                                   ArrayList<Producer> producers) {
-
-    producers.sort(Comparator.comparing(Producer::getEnergyType)
-            .thenComparing(Producer::getPriceKW).thenComparing(Producer::getEnergyPerDistributor));
-    for (Producer producer: producers
-    ) {
-      distributor.addProducers(producer);
-      producer.addsObserver(distributor);
-      System.out.println(distributor.stillNeed());
-      if (distributor.stillNeed() <= 0) {
-        break;
-      }
-    }
-    System.out.println("end\n");
-  }
 
   /**
    * Pay time distributors int.
